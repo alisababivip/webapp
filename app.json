@@ -49,11 +49,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "b0dbdfe5-bc8b-411c-bac6-6693e05bd385"
-      }
-    },
-    "owner": "hb88"
+      "router": {}
+    }
   }
 }
