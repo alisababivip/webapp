@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 18.3.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "node": "20.19.5"
+    },
+    "preview": {
+      "distribution": "internal",
+      "node": "20.19.5",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "ios-preview": {
+      "extends": "preview",
+      "credentialsSource": "local"
+    },
+    "production": {
+      "autoIncrement": true,
+      "node": "20.19.5"
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

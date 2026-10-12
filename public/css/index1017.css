@@ -1,0 +1,2254 @@
+body {
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-size: .28em;
+    line-height: 1.5;
+    font-family: '微软雅黑';
+    background: #e2e5ef;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-size: .28em;
+    line-height: 1.5;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.main .content {
+    display: flex;
+    flex-direction: column;
+    width: 880px;
+    /*margin: 150px 0 0;*/
+    margin: 20px 0;
+    padding: 100px 60px;
+    position: relative;
+    background: #f4f5fc;
+    border-radius: 10px;
+}
+
+.main-logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+}
+
+.main-logo img {
+    width: 140px;
+}
+
+.page1 .pay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.page1 .pay .left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 450px;
+}
+
+.page1 .pay .left .logo img {
+    width: 140px;
+    /*height: 60px;*/
+}
+
+.page1 .pay .left .ewm {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 250px;
+    background-color: #ffffff;
+    /*box-shadow: 0 0 10px 0 rgba(8, 1, 7, 0.2);*/
+    border-radius: 10px;
+    margin: 5px 0 10px;
+}
+
+.page1 .pay .left .ewm .guide {
+    position: absolute;
+    top: 0;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.page1 .pay .left .ewm .guide img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 10px 0 0 0;
+}
+
+.page1 .pay .left .ewm .download-btn {
+    position: absolute;
+    top: 100px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page1 .pay .left .ewm .download-btn img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.page1 .pay .left .ewm .refresh {
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page1 .pay .left .ewm .refresh img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.page1 .pay .left .ewm .qrcode {
+    width: 200px;
+    height: 200px;
+}
+
+.page1 .pay .left .ewm .qrcode canvas {
+    width: 200px;
+    height: 200px;
+}
+
+.page1 .pay .left .ewm img {
+    width: 200px;
+    height: 200px;
+}
+
+.page1 .pay .left #expire1,
+.page1 .pay .left #paySuccess1,
+.page1 .pay .left #payFail1,
+.page1 .pay .left #payRecharge1,
+.page1 .pay .left #payNotify1 {
+    position: absolute;
+    display: none;
+    /*cursor: pointer;*/
+}
+
+.page1 .pay .left .expire {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.97);
+    font-size: 16px;
+    color: #de554c;
+    text-align: center;
+}
+
+.page1 .pay .left .paySuccess {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 1);
+    font-size: 16px;
+    color: #09bb07;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.page1 .pay .left .expire img,
+.page1 .pay .left .paySuccess img {
+    width: 50px;
+    height: 50px;
+    margin: 0 0 5px 0;
+}
+
+.page1 .bankLogo {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
+.page1 .bankLogo .line {
+    width: 1px;
+    height: 25px;
+    background: #999;
+    margin: 0 10px;
+}
+
+.page1 .bankLogo img {
+    width: 110px;
+}
+
+.page1 .pay .left .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 50px;
+    background-color: #912a66;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.page1 .pay .left .button p {
+    font-size: 16px;
+    color: #fff;
+}
+
+.page1 .pay .left .button img {
+    width: 20px;
+    height: 20px;
+    margin: 0 0 0 5px;
+}
+
+.page1 .pay .left .descriptions {
+    display: flex;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 10px;
+    border: solid 1px #fff3f3;
+    margin: 0 0 10px 0;
+    width: 100%;
+}
+
+.page1 .pay .left .descriptions .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    background-color: #ffffff;
+    border-radius: 10px 0 0 10px;
+    overflow: hidden;
+}
+
+.page1 .pay .left .descriptions .icon img {
+    width: 24px;
+    height: 24px;
+    transform: translateX(-24px);
+    filter: drop-shadow(#A32970 24px 0 0);
+}
+
+.page1 .pay .left .descriptions .text {
+    width: 100%;
+    font-size: 10px;
+    color: #666;
+    padding: 10px 10px 10px 0;
+}
+
+.page1 .pay .left .descriptions .text div {
+    margin: 4px 0;
+}
+
+.page1 .pay .left .descriptions .text span {
+    color: #ff971b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.page1 .pay .right {
+    display: flex;
+    flex-direction: column;
+    width: 450px;
+    padding: 0;
+    background: #fff;
+    border-radius: 10px;
+    border: solid 1px #96356e;
+}
+
+.page1 .pay .right .divBorder {
+    /*background: #fef9ff;*/
+    /*border-radius: 6px;*/
+    /*border: solid 1px #96356e;*/
+    /*padding: 5px 8px 5px 20px;*/
+}
+
+.page1 .pay .right .box {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    line-height: 32px;
+    position: relative;
+    padding: 5px 8px 5px 20px;
+    margin: 0;
+}
+
+.page1 .pay .right .box .boxLeft {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.page1 .pay .right .box .boxLeft .title {
+    font-size: 15px;
+    color: #8590a0;
+}
+
+.page1 .pay .right .box .boxLeft .val {
+    font-size: 15px;
+    color: #263955;
+    line-height: 28px;
+    min-height: 28px;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.page1 .pay .right .box .boxLeft .val.color1 {
+    color: #ff971b;
+    font-weight: 700;
+}
+
+.page1 .pay .right .box .boxRight {
+    width: 81px;
+}
+
+.page1 .pay .right .box .boxRight .copy {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f6fb;
+    border-radius: 18px;
+    width: 81px;
+    height: 36px;
+    color: #3689f9;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.page1 .pay .right .box p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.page1 .pay .right .box span {
+    font-size: 20px;
+    color: #4DA2FF;
+}
+
+.page1 .pay .right .box input {
+    font-size: 16px;
+    color: #4DA2FF;
+    border: none;
+    display: none;
+}
+
+.page1 .pay .right .box button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.page1 .pay .right .box .copy-success span,
+.page1 .pay .right .box .copy-success2 span {
+    position: fixed;
+    top: 10px;
+    left: 0;
+    right: 0;
+    color: #000;
+    border-radius: 5px;
+    line-height: 45px;
+    font-size: 15px;
+    margin: 0 auto;
+    width: 350px;
+    text-align: center;
+    background: #f6ffed;
+    border: 1px solid #b7eb8f;
+}
+
+/*.page1 .pay .right .box img {*/
+
+/*    width: 16px;*/
+
+/*    height: 16px;*/
+
+/*    margin: 0 0 0 10px;*/
+
+/*}*/
+
+.page1 .pay .right .descriptions {
+    display: flex;
+    background: #ffffff;
+    border-radius: 10px;
+    border: dashed 1px #F59A23;
+    position: relative;
+    padding: 0 0 15px 0;
+    margin: 10px;
+}
+
+.page1 .pay .right .descriptions .icon {
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    width: 60px;
+    margin: 0 0 0 -30px;
+    border-radius: 10px 0 0 10px;
+}
+
+.page1 .pay .right .descriptions .icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.page1 .pay .right .descriptions .text {
+    /*width: 100%;*/
+    font-size: 14px;
+    color: #455871;
+    padding: 10px;
+}
+
+.page1 .pay .right .descriptions .text span {
+    color: #ff971b;
+}
+
+.page2 .pay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.page2 .pay .left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 450px;
+}
+
+.page2 .pay .left .logo img {
+    width: 140px;
+    /*height: 60px;*/
+}
+
+.page2 .pay .left .ewm {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 250px;
+    background-color: #ffffff;
+    /*box-shadow: 0 0 10px 0 rgba(8, 1, 7, 0.2);*/
+    border-radius: 10px;
+    margin: 5px 0 10px;
+}
+
+.page2 .pay .left .ewm .guide {
+    position: absolute;
+    top: 0;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.page2 .pay .left .ewm .guide img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 10px 0 0 0;
+}
+
+.page2 .pay .left .ewm .download-btn {
+    position: absolute;
+    top: 100px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page2 .pay .left .ewm .download-btn img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.page2 .pay .left .ewm .refresh {
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page2 .pay .left .ewm .refresh img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.page2 .pay .left .ewm .qrcode {
+    width: 200px;
+    height: 200px;
+}
+
+.page2 .pay .left .ewm .qrcode canvas {
+    width: 200px;
+    height: 200px;
+}
+
+.page2 .pay .left .ewm img {
+    width: 200px;
+    height: 200px;
+}
+
+.page2 .pay .left #expire2,
+.page2 .pay .left #paySuccess2,
+.page2 .pay .left #payFail2,
+.page2 .pay .left #payRecharge2,
+.page2 .pay .left #payNotify2 {
+    position: absolute;
+    display: none;
+    /*cursor: pointer;*/
+}
+
+.page2 .pay .left .expire {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.97);
+    font-size: 16px;
+    color: #de554c;
+    text-align: center;
+}
+
+.page2 .pay .left .paySuccess {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 1);
+    font-size: 16px;
+    color: #09bb07;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.page2 .pay .left .expire img,
+.page2 .pay .left .paySuccess img {
+    width: 50px;
+    height: 50px;
+    margin: 0 0 5px 0;
+}
+
+.page2 .bankLogo {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
+.page2 .bankLogo .line {
+    width: 1px;
+    height: 25px;
+    background: #999;
+    margin: 0 10px;
+}
+
+.page2 .bankLogo img {
+    width: 110px;
+}
+
+.page2 .pay .left .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 50px;
+    background-color: #70b74c;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.page2 .pay .left .button p {
+    font-size: 16px;
+    color: #fff;
+}
+
+.page2 .pay .left .button img {
+    width: 20px;
+    height: 20px;
+    margin: 0 0 0 5px;
+}
+
+.page2 .pay .left .descriptions {
+    display: flex;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 10px;
+    border: solid 1px #fff3f3;
+    margin: 0 0 10px 0;
+    width: 100%;
+}
+
+.page2 .pay .left .descriptions .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    background-color: #ffffff;
+    border-radius: 10px 0 0 10px;
+    overflow: hidden;
+}
+
+.page2 .pay .left .descriptions .icon img {
+    width: 24px;
+    height: 24px;
+    transform: translateX(-24px);
+    filter: drop-shadow(#55BA37 24px 0 0);
+}
+
+.page2 .pay .left .descriptions .text {
+    width: 100%;
+    font-size: 10px;
+    color: #666;
+    padding: 10px 10px 10px 0;
+}
+
+.page2 .pay .left .descriptions .text div {
+    margin: 4px 0;
+}
+
+.page2 .pay .left .descriptions .text span {
+    color: #ff971b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.page2 .pay .right {
+    display: flex;
+    flex-direction: column;
+    width: 450px;
+    padding: 0;
+    background: #fff;
+    border-radius: 10px;
+    border: solid 1px #dff2d5;
+}
+
+.page2 .pay .right .divBorder {
+    /*background: #fbfffb;*/
+    /*border-radius: 6px;*/
+    /*border: solid 1px #dff2d5;*/
+    /*padding: 5px 8px 5px 20px;*/
+}
+
+.page2 .pay .right .box {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    line-height: 32px;
+    position: relative;
+    padding: 5px 8px 5px 20px;
+    margin: 0;
+}
+
+.page2 .pay .right .box .boxLeft {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.page2 .pay .right .box .boxLeft .title {
+    font-size: 15px;
+    color: #8590a0;
+}
+
+.page2 .pay .right .box .boxLeft .val {
+    font-size: 15px;
+    color: #263955;
+    line-height: 28px;
+    min-height: 28px;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.page2 .pay .right .box .boxLeft .val.color1 {
+    color: #ff971b;
+    font-weight: 700;
+}
+
+.page2 .pay .right .box .boxRight {
+    width: 81px;
+}
+
+.page2 .pay .right .box .boxRight .copy {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f6fb;
+    border-radius: 18px;
+    width: 81px;
+    height: 36px;
+    color: #3689f9;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.page2 .pay .right .box p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.page2 .pay .right .box span {
+    font-size: 20px;
+    color: #4DA2FF;
+}
+
+.page2 .pay .right .box input {
+    font-size: 16px;
+    color: #4DA2FF;
+    border: none;
+    display: none;
+}
+
+.page2 .pay .right .box button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.page2 .pay .right .box .copy-success span,
+.page2 .pay .right .box .copy-success2 span {
+    position: fixed;
+    top: 10px;
+    left: 0;
+    right: 0;
+    color: #000;
+    border-radius: 5px;
+    line-height: 45px;
+    font-size: 15px;
+    margin: 0 auto;
+    width: 350px;
+    text-align: center;
+    background: #f6ffed;
+    border: 1px solid #b7eb8f;
+}
+
+/*.page2 .pay .right .box img {*/
+
+/*    width: 16px;*/
+
+/*    height: 16px;*/
+
+/*    margin: 0 0 0 10px;*/
+
+/*}*/
+
+.page2 .pay .right .descriptions {
+    display: flex;
+    background: #ffffff;
+    border-radius: 10px;
+    border: dashed 1px #F59A23;
+    position: relative;
+    padding: 0 0 15px 0;
+    margin: 10px;
+}
+
+.page2 .pay .right .descriptions .icon {
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    width: 60px;
+    margin: 0 0 0 -30px;
+    border-radius: 10px 0 0 10px;
+}
+
+.page2 .pay .right .descriptions .icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.page2 .pay .right .descriptions .text {
+    /*width: 100%;*/
+    font-size: 14px;
+    color: #455871;
+    padding: 10px;
+}
+
+.page2 .pay .right .descriptions .text span {
+    color: #ff971b;
+}
+
+.page3 .pay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.page3 .pay .left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 450px;
+}
+
+.page3 .pay .left .logo img {
+    width: 140px;
+    /*height: 60px;*/
+}
+
+.page3 .pay .left .ewm {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 250px;
+    background-color: #ffffff;
+    /*box-shadow: 0 0 10px 0 rgba(8, 1, 7, 0.2);*/
+    border-radius: 10px;
+    margin: 5px 0 10px;
+}
+
+.page3 .pay .left .ewm .guide {
+    position: absolute;
+    top: 0;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.page3 .pay .left .ewm .guide img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 10px 0 0 0;
+}
+
+.page3 .pay .left .ewm .download-btn {
+    position: absolute;
+    top: 100px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page3 .pay .left .ewm .download-btn img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.page3 .pay .left .ewm .refresh {
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page3 .pay .left .ewm .refresh img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.page3 .pay .left .ewm .qrcode {
+    width: 200px;
+    height: 200px;
+}
+
+.page3 .pay .left .ewm .qrcode canvas {
+    width: 200px;
+    height: 200px;
+}
+
+.page3 .pay .left .ewm img {
+    width: 200px;
+    height: 200px;
+}
+
+.page3 .pay .left #expire3,
+.page3 .pay .left #paySuccess3,
+.page3 .pay .left #payFail3,
+.page3 .pay .left #payRecharge3,
+.page3 .pay .left #payNotify3 {
+    position: absolute;
+    display: none;
+    /*cursor: pointer;*/
+}
+
+.page3 .pay .left .expire {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.97);
+    font-size: 16px;
+    color: #de554c;
+    text-align: center;
+}
+
+.page3 .pay .left .paySuccess {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 1);
+    font-size: 16px;
+    color: #09bb07;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.page3 .pay .left .expire img,
+.page3 .pay .left .paySuccess img {
+    width: 50px;
+    height: 50px;
+    margin: 0 0 5px 0;
+}
+
+.page3 .bankLogo {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
+.page3 .bankLogo .line {
+    width: 1px;
+    height: 12px;
+    background: #999;
+    margin: 0 4px;
+}
+
+.page3 .bankLogo img {
+    /*width: 80px;*/
+    margin: 0 2px;
+    height: 26px;
+}
+
+.page3 .pay .left .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 50px;
+    background-color: #1a53ff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.page3 .pay .left .button p {
+    font-size: 16px;
+    color: #fff;
+}
+
+.page3 .pay .left .button img {
+    width: 20px;
+    height: 20px;
+    margin: 0 0 0 5px;
+}
+
+.page3 .pay .left .descriptions {
+    display: flex;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 10px;
+    border: solid 1px #fff3f3;
+    margin: 0 0 10px 0;
+    width: 100%;
+}
+
+.page3 .pay .left .descriptions .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    background-color: #ffffff;
+    border-radius: 10px 0 0 10px;
+    overflow: hidden;
+}
+
+.page3 .pay .left .descriptions .icon img {
+    width: 24px;
+    height: 24px;
+    transform: translateX(-24px);
+    filter: drop-shadow(#2499f6 24px 0 0);
+}
+
+.page3 .pay .left .descriptions .text {
+    width: 100%;
+    font-size: 10px;
+    color: #666;
+    padding: 10px 10px 10px 0;
+}
+
+.page3 .pay .left .descriptions .text div {
+    margin: 4px 0;
+}
+
+.page3 .pay .left .descriptions .text span {
+    color: #ff971b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.page3 .pay .right {
+    display: flex;
+    flex-direction: column;
+    width: 450px;
+    padding: 0;
+    background: #fff;
+    border-radius: 10px;
+    border: solid 1px #2499f6;
+}
+
+.page3 .pay .right .divBorder {
+    /*background: #f4f7ff;*/
+    /*border-radius: 6px;*/
+    /*border: solid 1px #d6e6ff;*/
+    /*padding: 5px 8px 5px 20px;*/
+    /*margin: 0 0 10px 0;*/
+}
+
+.page3 .pay .right .box {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    line-height: 32px;
+    position: relative;
+    padding: 5px 8px 5px 20px;
+    margin: 0;
+}
+
+.page3 .pay .right .box .boxLeft {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.page3 .pay .right .box .boxLeft .title {
+    font-size: 15px;
+    color: #8590a0;
+}
+
+.page3 .pay .right .box .boxLeft .val {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 15px;
+    color: #263955;
+    line-height: 32px;
+    height: 32px;
+}
+
+.page3 .pay .right .box .boxLeft .val img {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 55px;
+}
+
+.page3 .pay .right .box .boxLeft .val .line {
+    width: 1px;
+    height: 12px;
+    background: #999;
+    margin: 0 8px;
+}
+
+.page3 .pay .right .box .boxLeft .val.color1 {
+    color: #ff971b;
+    font-weight: 700;
+}
+
+.page3 .pay .right .box .boxRight {
+    width: 81px;
+}
+
+.page3 .pay .right .box .boxRight .copy {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f6fb;
+    border-radius: 18px;
+    width: 81px;
+    height: 36px;
+    color: #3689f9;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.page3 .pay .right .box p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.page3 .pay .right .box span {
+    font-size: 20px;
+    color: #4DA2FF;
+}
+
+.page3 .pay .right .box input {
+    font-size: 16px;
+    color: #4DA2FF;
+    border: none;
+    display: none;
+}
+
+.page3 .pay .right .box button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.page3 .pay .right .box .copy-success span,
+.page3 .pay .right .box .copy-success2 span,
+.page3 .pay .right .box .copy-success3 span,
+.page3 .pay .right .box .copy-success4 span,
+.page3 .pay .right .box .copy-success5 span {
+    position: fixed;
+    top: 10px;
+    left: 0;
+    right: 0;
+    color: #000;
+    border-radius: 5px;
+    line-height: 45px;
+    font-size: 15px;
+    margin: 0 auto;
+    width: 350px;
+    text-align: center;
+    background: #f6ffed;
+    border: 1px solid #b7eb8f;
+}
+
+/*.page3 .pay .right .box img {*/
+
+/*    width: 16px;*/
+
+/*    height: 16px;*/
+
+/*    margin: 0 0 0 10px;*/
+
+/*}*/
+
+.page3 .pay .right .descriptions {
+    display: flex;
+    background: #ffffff;
+    border-radius: 10px;
+    border: dashed 1px #F59A23;
+    position: relative;
+    padding: 0 0 15px 0;
+    margin: 10px;
+}
+
+.page3 .pay .right .descriptions .icon {
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    width: 60px;
+    margin: 0 0 0 -30px;
+    border-radius: 10px 0 0 10px;
+}
+
+.page3 .pay .right .descriptions .icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.page3 .pay .right .descriptions .text {
+    /*width: 100%;*/
+    font-size: 14px;
+    color: #455871;
+    padding: 10px;
+}
+
+.page3 .pay .right .descriptions .text span {
+    color: #ff971b;
+}
+
+.page4 .pay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.page4 .pay .left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 450px;
+}
+
+.page4 .pay .left .logo img {
+    width: 140px;
+    /*height: 60px;*/
+}
+
+.page4 .pay .left .ewm {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 250px;
+    background-color: #ffffff;
+    /*box-shadow: 0 0 10px 0 rgba(8, 1, 7, 0.2);*/
+    border-radius: 10px;
+    margin: 5px 0 10px;
+}
+
+.page4 .pay .left .ewm .guide {
+    position: absolute;
+    top: 0;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.page4 .pay .left .ewm .guide img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 10px 0 0 0;
+}
+
+.page4 .pay .left .ewm .download-btn {
+    position: absolute;
+    top: 100px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page4 .pay .left .ewm .download-btn img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    position: relative;
+}
+
+.page4 .pay .left .ewm .refresh {
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    z-index: 1;
+    background: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page4 .pay .left .ewm .refresh img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.page4 .pay .left .ewm .qrcode {
+    width: 200px;
+    height: 200px;
+}
+
+.page4 .pay .left .ewm .qrcode canvas {
+    width: 200px;
+    height: 200px;
+}
+
+.page4 .pay .left .ewm img {
+    width: 200px;
+    height: 200px;
+}
+
+.page4 .pay .left #expire4,
+.page4 .pay .left #paySuccess4,
+.page4 .pay .left #payFail4,
+.page4 .pay .left #payRecharge4,
+.page4 .pay .left #payNotify4 {
+    position: absolute;
+    display: none;
+    /*cursor: pointer;*/
+}
+
+.page4 .pay .left .expire {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.97);
+    font-size: 16px;
+    color: #de554c;
+    text-align: center;
+}
+
+.page4 .pay .left .paySuccess {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 1);
+    font-size: 16px;
+    color: #09bb07;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.page4 .pay .left .expire img,
+.page4 .pay .left .paySuccess img {
+    width: 50px;
+    height: 50px;
+    margin: 0 0 5px 0;
+}
+
+.page4 .bankLogo {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
+.page4 .bankLogo .line {
+    width: 1px;
+    height: 12px;
+    background: #999;
+    margin: 0 4px;
+}
+
+.page4 .bankLogo img {
+    /*width: 80px;*/
+    margin: 0 2px;
+    height: 26px;
+}
+
+.page4 .pay .left .button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 50px;
+    background-color: #1a53ff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.page4 .pay .left .button p {
+    font-size: 16px;
+    color: #fff;
+}
+
+.page4 .pay .left .button img {
+    width: 20px;
+    height: 20px;
+    margin: 0 0 0 5px;
+}
+
+.page4 .pay .left .descriptions {
+    display: flex;
+    justify-content: space-between;
+    background: #ffffff;
+    border-radius: 10px;
+    border: solid 1px #fff3f3;
+    margin: 0 0 10px 0;
+    width: 100%;
+}
+
+.page4 .pay .left .descriptions .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    background-color: #ffffff;
+    border-radius: 10px 0 0 10px;
+    overflow: hidden;
+}
+
+.page4 .pay .left .descriptions .icon img {
+    width: 24px;
+    height: 24px;
+    transform: translateX(-24px);
+    filter: drop-shadow(#2499f6 24px 0 0);
+}
+
+.page4 .pay .left .descriptions .text {
+    width: 100%;
+    font-size: 10px;
+    color: #666;
+    padding: 10px 10px 10px 0;
+}
+
+.page4 .pay .left .descriptions .text div {
+    margin: 4px 0;
+}
+
+.page4 .pay .left .descriptions .text span {
+    color: #ff971b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.page4 .pay .right {
+    display: flex;
+    flex-direction: column;
+    width: 450px;
+    padding: 0;
+    background: #fff;
+    border-radius: 10px;
+    border: solid 1px #2499f6;
+}
+
+.page4 .pay .right .divBorder {
+    /*background: #f4f7ff;*/
+    /*border-radius: 6px;*/
+    /*border: solid 1px #d6e6ff;*/
+    /*padding: 5px 8px 5px 20px;*/
+}
+
+.page4 .pay .right .box {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    line-height: 32px;
+    position: relative;
+    padding: 5px 8px 5px 20px;
+    margin: 0;
+}
+
+.page4 .pay .right .box .boxLeft {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.page4 .pay .right .box .boxLeft .title {
+    font-size: 15px;
+    color: #8590a0;
+}
+
+.page4 .pay .right .box .boxLeft .val {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 15px;
+    color: #263955;
+    line-height: 32px;
+    height: 32px;
+}
+
+.page4 .pay .right .box .boxLeft .val img {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 55px;
+}
+
+.page4 .pay .right .box .boxLeft .val .line {
+    width: 1px;
+    height: 12px;
+    background: #999;
+    margin: 0 8px;
+}
+
+.page4 .pay .right .box .boxLeft .val.color1 {
+    color: #ff971b;
+    font-weight: 700;
+}
+
+.page4 .pay .right .box .boxRight {
+    width: 81px;
+}
+
+.page4 .pay .right .box .boxRight .copy {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f6fb;
+    border-radius: 18px;
+    width: 81px;
+    height: 36px;
+    color: #3689f9;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.page4 .pay .right .box p {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.page4 .pay .right .box span {
+    font-size: 20px;
+    color: #4DA2FF;
+}
+
+.page4 .pay .right .box input {
+    font-size: 16px;
+    color: #4DA2FF;
+    border: none;
+    display: none;
+}
+
+.page4 .pay .right .box button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.page4 .pay .right .box .copy-success span,
+.page4 .pay .right .box .copy-success2 span,
+.page4 .pay .right .box .copy-success3 span,
+.page4 .pay .right .box .copy-success4 span,
+.page4 .pay .right .box .copy-success5 span {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    color: #000;
+    border-radius: 5px;
+    height: 45px;
+    line-height: 45px;
+    font-size: 15px;
+    margin: 0 0 0 -175px;
+    width: 350px;
+    text-align: center;
+    background: #f6ffed;
+    border: 1px solid #b7eb8f;
+    z-index: 9998;
+}
+
+/*.page4 .pay .right .box img {*/
+
+/*    width: 16px;*/
+
+/*    height: 16px;*/
+
+/*    margin: 0 0 0 10px;*/
+
+/*}*/
+
+.page4 .pay .right .descriptions {
+    display: flex;
+    background: #ffffff;
+    border-radius: 10px;
+    border: dashed 1px #F59A23;
+    position: relative;
+    margin: 10px;
+}
+
+.page4 .pay .right .descriptions .icon {
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    width: 60px;
+    margin: 0 0 0 -30px;
+    border-radius: 10px 0 0 10px;
+}
+
+.page4 .pay .right .descriptions .icon img {
+    width: 30px;
+    height: 30px;
+}
+
+.page4 .pay .right .descriptions .text {
+    /*width: 100%;*/
+    font-size: 14px;
+    color: #455871;
+    padding: 10px;
+}
+
+.page4 .pay .right .descriptions .text span {
+    color: #ff971b;
+}
+
+.content .notice {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 50px 0 0 0;
+}
+
+.notice .box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+.notice .box img {
+    width: 50px;
+    height: 48px;
+    margin: 0 0 10px 0;
+}
+
+#alert-box {
+    z-index: 9999;
+    display: none;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    color: #666;
+    border-radius: 5px;
+    width: 350px;
+    text-align: center;
+    font-size: 14px;
+}
+
+#alert-box .content {
+    padding: 20px;
+}
+
+#alert-box .button {
+    border-top: 1px solid #eee;
+    line-height: 50px;
+    color: #1a53ff;
+    cursor: pointer;
+}
+
+#alert-box-shade {
+    z-index: 9998;
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 100%;
+}
+
+.guide-swiper-shade {
+    z-index: 99;
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 100%;
+}
+
+.guide-swiper {
+    z-index: 100;
+    display: none;
+    position: fixed;
+    bottom: 50%;
+    left: 50%;
+    background: #fff;
+    border-radius: 12px;
+    width: 880px;
+    height: 600px;
+    margin: 0 0 -300px -440px;
+    background: url("../images/swiper/bg.png");
+    background-size: cover;
+}
+
+.guide-swiper .title {
+    z-index: 11;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin: 0 0 0 -50%;
+    width: 100%;
+    text-align: center;
+    line-height: 60px;
+    font-size: 18px;
+}
+
+.guide-swiper .closeBtn {
+    z-index: 11;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.guide-swiper .closeBtn img {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    background-position: center;
+    background-size: cover;
+}
+
+.swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+}
+
+.swiper-pagination-white .swiper-pagination-bullet {
+    background: #86A8FF;
+}
+
+.swiper-pagination-white .swiper-pagination-bullet-active {
+    background: #004DFF;
+}
+
+.swiper-container-horizontal>.swiper-pagination-bullets,
+.swiper-pagination-custom,
+.swiper-pagination-fraction {
+    bottom: 15px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    position: absolute;
+    top: 50%;
+    width: 25px;
+    height: 25px;
+    margin-top: -22px;
+    z-index: 10;
+    cursor: pointer;
+    -moz-background-size: 25px 25px;
+    -webkit-background-size: 25px 25px;
+    background-size: 25px 25px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.swiper-button-next {
+    right: 20px;
+}
+
+.swiper-button-prev {
+    left: 20px;
+}
+
+.swiper-button-prev.swiper-button-white {
+    background-image: url("../images/swiper/zhifuuydtbz.png");
+}
+
+.swiper-button-next.swiper-button-white {
+    background-image: url("../images/swiper/zhifuuydtby.png");
+}
+
+.swiper-slide .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    border-radius: 12px;
+}
+
+.swiper-slide .content img {
+    /*width: 400px;*/
+    height: 400px;
+    padding: 20px 0;
+}
+
+.swiper-slide .content p {
+    line-height: 24px;
+    font-size: 16px;
+    text-align: center;
+    padding: 0 30px;
+}
+
+.swiper-slide .content .pic {
+    position: relative;
+}
+
+.swiper-slide .content .pic .pic-text.pic-text1 {
+    position: absolute;
+    bottom: 58px;
+    right: 6px;
+    width: 230px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+}
+
+.swiper-slide .content .pic .pic-text.pic-text2 {
+    position: absolute;
+    bottom: 140px;
+    right: 6px;
+    width: 230px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+}
+
+.swiper-slide .content .pic .pic-text.pic-text3 {
+    position: absolute;
+    bottom: 126px;
+    right: 6px;
+    width: 230px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+}
+
+.swiper-slide .content .pic .pic-text.pic-text4 {
+    position: absolute;
+    bottom: 140px;
+    right: 16px;
+    width: 230px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 22px;
+}
+
+/*@media screen and (max-width:1200px) {*/
+
+/*    .main {*/
+
+/*        display: flex;*/
+
+/*        flex-direction: column;*/
+
+/*        width: 100%;*/
+
+/*        height: 100%;*/
+
+/*    }*/
+
+/*    .main .content {*/
+
+/*        !*margin: 20px 0;*!*/
+
+/*    }*/
+
+/*}*/
+
+@media screen and (max-width:1000px) {
+    .main .content {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 10px 0 0 0;
+        border-radius: 0;
+    }
+    .main-logo {
+        position: unset;
+        padding: 0 0 30px 0;
+        margin: 0 auto;
+    }
+    .main-logo img {
+        width: 120px;
+    }
+    /*.ewm {*/
+    /*    margin: 5px 0 5px 0 !important;*/
+    /*    width: 200px !important;*/
+    /*    height: 200px !important;*/
+    /*}*/
+    /*.ewm .qrcode {*/
+    /*    width: 160px !important;*/
+    /*    height: 160px !important;*/
+    /*}*/
+    /*.ewm #qrcodeImg {*/
+    /*    width: 160px !important;*/
+    /*    height: 160px !important;*/
+    /*}*/
+    /*#isMobile1,*/
+    /*#isMobile2,*/
+    /*#isMobile3,*/
+    /*#isMobile4 {*/
+    /*    bottom: 3px !important;*/
+    /*}*/
+    /*.left .descriptions {*/
+    /*    margin: 5px 0 !important;*/
+    /*    line-height: 16px !important;*/
+    /*    width: 100% !important;*/
+    /*}*/
+    /*.box {*/
+    /*    padding: 0 !important;*/
+    /*}*/
+    /*.boxLeft .title {*/
+    /*    font-size: 3.4em !important;*/
+    /*    line-height: 1.5em !important;*/
+    /*}*/
+    /*.boxLeft .val {*/
+    /*    font-size: 4em !important;*/
+    /*    line-height: 1.2em !important;*/
+    /*}*/
+    /*.page4 .pay .right .box {*/
+    /*    padding: 2px 8px 2px 20px !important;*/
+    /*    margin: 0;*/
+    /*    border-radius: 0;*/
+    /*    border: none;*/
+    /*    background: none !important;*/
+    /*}*/
+    /*.page4 .pay .right .divBorder {*/
+    /*    padding-top: 5px;*/
+    /*    border-radius: 8px;*/
+    /*    background: #f4f7ff !important;*/
+    /*}*/
+    .pay .left .expire img {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    .pay .left .paySuccess img {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    .page1 .pay,
+    .page2 .pay,
+    .page3 .pay,
+    .page4 .pay {
+        display: flex;
+        flex-direction: column;
+        padding: 0 20px;
+    }
+    .page1 .pay .left,
+    .page2 .pay .left,
+    .page3 .pay .left,
+    .page4 .pay .left {
+        width: 100%;
+    }
+    .page1 .pay .left .logo img,
+    .page2 .pay .left .logo img {
+        width: 100px;
+    }
+    .page3 .pay .left .logo img,
+    .page4 .pay .left .logo img {
+        width: 100px;
+    }
+    .page1 .pay .left .ewm,
+    .page2 .pay .left .ewm {
+        margin: 0 0 15px 0;
+        width: 200px;
+        height: 200px;
+    }
+    .page3 .pay .left .ewm,
+    .page4 .pay .left .ewm {
+        margin: 0 0 8px 0;
+        width: 200px;
+        height: 200px;
+    }
+    .page1 .pay .left .ewm .qrcode,
+    .page2 .pay .left .ewm .qrcode,
+    .page3 .pay .left .ewm .qrcode,
+    .page4 .pay .left .ewm .qrcode {
+        width: 160px;
+        height: 160px;
+    }
+    .page1 .pay .left .ewm img,
+    .page2 .pay .left .ewm img,
+    .page3 .pay .left .ewm img,
+    .page4 .pay .left .ewm img {
+        width: 160px;
+        height: 160px;
+    }
+    .page1 .pay .left .button,
+    .page2 .pay .left .button,
+    .page3 .pay .left .button,
+    .page4 .pay .left .button {
+        height: 36px;
+    }
+    .page1 .pay .left .button p,
+    .page2 .pay .left .button p,
+    .page3 .pay .left .button p,
+    .page4 .pay .left .button p {
+        font-size: 14px;
+    }
+    .page1 .pay .left .descriptions,
+    .page2 .pay .left .descriptions,
+    .page3 .pay .left .descriptions,
+    .page4 .pay .left .descriptions {
+        font-size: 12px;
+        width: 100%;
+        margin: 8px 0;
+    }
+    .page1 .pay .left .descriptions .text,
+    .page2 .pay .left .descriptions .text,
+    .page3 .pay .left .descriptions .text,
+    .page4 .pay .left .descriptions .text {
+        /*padding: 3px 10px;*/
+    }
+    .page1 .pay .right,
+    .page2 .pay .right,
+    .page3 .pay .right,
+    .page4 .pay .right {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: 0 0 10px 0;
+        margin: 0;
+    }
+    .page1 .pay .right .divBorder,
+    .page2 .pay .right .divBorder,
+    .page3 .pay .right .divBorder {
+        padding: 6px;
+    }
+    .page4 .pay .right .divBorder {
+        padding: 6px;
+    }
+    .page1 .pay .right .box,
+    .page2 .pay .right .box,
+    .page3 .pay .right .box,
+    .page4 .pay .right .box {
+        padding: 5px 0 5px 10px;
+        margin: 0;
+        line-height: 18px;
+    }
+    #userName4,
+    #userName3 {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        line-height: 14px;
+        font-size: 14px;
+        width: 280px;
+    }
+    .page1 .pay .right .descriptions,
+    .page2 .pay .right .descriptions,
+    .page3 .pay .right .descriptions,
+    .page4 .pay .right .descriptions {
+        margin: 0 10px 0;
+    }
+    .page1 .pay .right .descriptions .text,
+    .page2 .pay .right .descriptions .text,
+    .page3 .pay .right .descriptions .text,
+    .page4 .pay .right .descriptions .text {
+        font-size: 14px;
+    }
+    .page1 .bankLogo,
+    .page2 .bankLogo,
+    .page3 .bankLogo,
+    .page4 .bankLogo {
+        margin: 5px 0 0 0;
+    }
+    .bankLogo img {
+        /*width: 70px;*/
+        height: 20px !important;
+    }
+    .page1 .pay .right .box .boxRight .copy,
+    .page2 .pay .right .box .boxRight .copy,
+    .page3 .pay .right .box .boxRight .copy,
+    .page4 .pay .right .box .boxRight .copy {
+        width: 70px;
+        height: 28px;
+    }
+    .content .notice {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        margin: 20px 0 0 0;
+        padding: 0 20px;
+    }
+    .notice .box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 46%;
+        color: #333;
+        margin: 0 0 40px 0;
+    }
+    #alert-box {
+        width: 70%;
+        top: 50%;
+    }
+    #alert-box .content {
+        padding: 20px;
+    }
+    #alert-box .button {
+        border-top: 1px solid #eee;
+        line-height: 40px;
+        color: #1a53ff;
+    }
+    .guide-swiper {
+        z-index: 100;
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        background: #fff;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        width: 100%;
+        height: 500px;
+        margin: 0 0 0 -50%;
+        background: url("../images/swiper/bg.png");
+        background-size: cover;
+    }
+    .guide-swiper .closeBtn {
+        z-index: 11;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+    .guide-swiper .closeBtn img {
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+    }
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none;
+    }
+    .swiper-slide .content {
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .swiper-slide .content img {
+        /*width: 400px;*/
+        height: 300px;
+        padding: 20px 0;
+    }
+    .swiper-slide .content p {
+        line-height: 18px;
+        font-size: 12px;
+        text-align: center;
+        padding: 0 15px;
+    }
+    .swiper-slide .content .pic .pic-text.pic-text1 {
+        position: absolute;
+        bottom: 47px;
+        right: 12px;
+        width: 48%;
+        font-size: 10px;
+        text-align: center;
+        line-height: 15px;
+    }
+    .swiper-slide .content .pic .pic-text.pic-text2 {
+        position: absolute;
+        bottom: 114px;
+        right: 12px;
+        width: 48%;
+        font-size: 10px;
+        text-align: center;
+        line-height: 15px;
+    }
+    .swiper-slide .content .pic .pic-text.pic-text3 {
+        position: absolute;
+        bottom: 104px;
+        right: 12px;
+        width: 48%;
+        font-size: 10px;
+        text-align: center;
+        line-height: 15px;
+    }
+    .swiper-slide .content .pic .pic-text.pic-text4 {
+        position: absolute;
+        bottom: 110px;
+        right: 12px;
+        width: 48%;
+        font-size: 10px;
+        text-align: center;
+        line-height: 15px;
+    }
+}
