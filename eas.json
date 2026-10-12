@@ -7,11 +7,11 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "20.19.5"
+      "node": "22.15.0"
     },
     "preview": {
       "distribution": "internal",
-      "node": "20.19.5",
+      "node": "22.15.0",
       "android": {
         "buildType": "apk"
       }
@@ -22,7 +22,7 @@
     },
     "production": {
       "autoIncrement": true,
-      "node": "20.19.5"
+      "node": "22.15.0"
     }
   },
   "submit": {
