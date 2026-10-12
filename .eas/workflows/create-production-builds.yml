@@ -11,4 +11,4 @@ jobs:
     type: build
     params:
       platform: ios
-      profile: ios-preview
+      profile: preview
