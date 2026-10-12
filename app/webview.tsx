@@ -41,12 +41,12 @@ type DepositInfo = {
 // ─── Danh sách ngân hàng hiển thị ───────────────────────────────────────────
 
 const BANK_OPTIONS = [
-  { key: "nab",        label: "NAM A BANK",  image: require("../qrcode/images/nab.png") },
-  { key: "bidv",       label: "BIDV",        image: require("../qrcode/images/bidv.png") },
-  { key: "msb",        label: "MSB",         image: require("../qrcode/images/msb.png") },
-  { key: "stb",        label: "SACOMBANK",   image: require("../qrcode/images/stb.png") },
-  { key: "vietbank",   label: "VIETBANK",    image: require("../qrcode/images/vietbank.png") },
-  { key: "vietcombank",label: "VIETCOMBANK", image: require("../qrcode/images/vcb.png") },
+  { key: "nab", label: "NAM A BANK", image: require("../qrcode/images/nab.png") },
+  { key: "bidv", label: "BIDV", image: require("../qrcode/images/bidv.png") },
+  { key: "msb", label: "MSB", image: require("../qrcode/images/msb.png") },
+  { key: "stb", label: "SACOMBANK", image: require("../qrcode/images/stb.png") },
+  { key: "vietbank", label: "VIETBANK", image: require("../qrcode/images/vietbank.png") },
+  { key: "vietcombank", label: "VIETCOMBANK", image: require("../qrcode/images/vcb.png") },
 ];
 
 // ─── Injected JS chạy trong DOM của WebView ──────────────────────────────────
@@ -116,9 +116,11 @@ const INJECTED_JS = `
     return String(Math.round(value * multiplier));
   }
 
-  /* Lấy số tiền từ DOM */
+  /* Lấy số tiền RAW từ DOM — trả về đúng số người dùng nhập, chưa nhân hệ số
+     Ví dụ: người dùng gõ "100" -> trả về "100"
+     App React sẽ nhân x1000 để ra 100,000 VND */
   function getAmountFromDom() {
-    // 1. Ô input chứa tiền
+    // Ưu tiên 1: các ô input visible có value
     var inputSelectors = [
       'input[placeholder*="ti\u1ebfn"]',
       'input[placeholder*="Ti\u1ebfn"]',
@@ -136,14 +138,18 @@ const INJECTED_JS = `
       var inputs = document.querySelectorAll(inputSelectors[i]);
       for (var k = 0; k < inputs.length; k++) {
         var inp = inputs[k];
-        if (inp.value) {
+        // Chỉ lấy input đang visible
+        if (inp.value && inp.offsetParent !== null) {
           var p = parseAmount(inp.value);
-          if (p !== "0") return p;
+          if (p !== "0") {
+            log("getAmount from input[" + inputSelectors[i] + "] = " + p);
+            return p;
+          }
         }
       }
     }
 
-    // 2. Gói / ô đang active / selected
+    // Ưu tiên 2: gói đang active/selected có text là số tiền
     var activeSelectors = [
       '[class*="active"]',
       '[class*="selected"]',
@@ -159,7 +165,11 @@ const INJECTED_JS = `
         var txt = (node.textContent || node.innerText || "").trim();
         if (txt) {
           var pn = parseAmount(txt);
-          if (pn !== "0" && Number(pn) >= 10000) return pn;
+          // Giá trị hợp lệ: >= 1 (sau khi app nhân x1000 sẽ >= 1000)
+          if (pn !== "0" && Number(pn) >= 1) {
+            log("getAmount from active node = " + pn);
+            return pn;
+          }
         }
       }
     }
@@ -167,25 +177,26 @@ const INJECTED_JS = `
     return "0";
   }
 
-  /* Kiểm tra có phải nút xác nhận nạp tiền không */
+  /* Kiểm tra có phải nút xác nhận nạp tiền không
+     — chỉ khớp EXACT text sau normalize, không dùng indexOf để tránh bắt nhầm */
   function isConfirmButton(el) {
     if (!el) return false;
+
+    // Chỉ xét button / a / element có role button — bỏ qua div/span/label
+    var tag = (el.tagName || "").toUpperCase();
+    var role = (el.getAttribute ? el.getAttribute("role") : null) || "";
+    var isClickable = tag === "BUTTON" || tag === "A" || role === "button";
+    if (!isClickable) return false;
+
     var text = normalizeText(el.textContent || el.innerText || "");
-    var confirmTexts = [
-      "XAC NHAN NAP TIEN",
-      "XAC NHAN NAP",
-      "XAC NHAN",
-      "NAP TIEN",
-      "CONFIRM DEPOSIT",
-      "DEPOSIT NOW"
-    ];
-    for (var i = 0; i < confirmTexts.length; i++) {
-      if (text.indexOf(confirmTexts[i]) > -1) return true;
-    }
+    // Exact match: text của nút phải đúng là "XAC NHAN NAP TIEN"
+    if (text === "XAC NHAN NAP TIEN") return true;
+
+    // Class cụ thể — chỉ khớp tên class chính xác, không regex chung
     if (el.classList) {
-      var classList = el.className || "";
-      if (/confime|confirm|deposit/i.test(classList)) return true;
+      if (el.classList.contains("confimeButton") || el.classList.contains("confirmButton")) return true;
     }
+
     return false;
   }
 
@@ -297,16 +308,18 @@ export default function WebViewScreen() {
       const data = JSON.parse(message);
 
       if (data.action === "confirm_deposit_clicked") {
-        const raw = Number(data.amount);
-        if (!raw || raw <= 0) {
+        const rawInput = Number(data.amount);   // số người dùng gõ vào input, VD: 100
+        if (!rawInput || rawInput <= 0) {
           Alert.alert("Thông báo", "Số tiền nạp không hợp lệ. Vui lòng kiểm tra lại.");
           return;
         }
+        // Tỉ lệ 1:1000 — người dùng nhập 100 -> chuyển khoản 100,000 VND
+        const finalAmount = rawInput * 1000;
         setQrLoading(true);
         setDepositInfo({
-          amountDisplay: `${formatMoneyInt(raw)} VND`,
-          amountValue: String(raw),
-          rawAmount: data.amount,
+          amountDisplay: `${formatMoneyInt(finalAmount)} VND`,
+          amountValue: String(finalAmount),
+          rawAmount: String(rawInput),          // lưu lại số gốc để hiển thị nội dung CK
         });
       }
 
@@ -490,10 +503,10 @@ function InfoRow({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  container:        { flex: 1, backgroundColor: "#fff" },
-  webview:          { flex: 1 },
-  paymentScreen:    { flex: 1, backgroundColor: "#eef3f8" },
-  paymentContent:   { padding: 16, gap: 14 },
+  container: { flex: 1, backgroundColor: "#fff" },
+  webview: { flex: 1 },
+  paymentScreen: { flex: 1, backgroundColor: "#eef3f8" },
+  paymentContent: { padding: 16, gap: 14 },
 
   paymentHeader: {
     backgroundColor: "#e8f1ff",
@@ -525,7 +538,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginBottom: 18,
   },
-  bankLogoItem:       { alignItems: "center", flex: 1, paddingHorizontal: 2 },
+  bankLogoItem: { alignItems: "center", flex: 1, paddingHorizontal: 2 },
   bankLogoItemActive: { transform: [{ translateY: -2 }] },
   bankLogoImage: {
     width: 38,
@@ -536,10 +549,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     backgroundColor: "#fff",
   },
-  bankLogoText:       { fontSize: 9, color: "#64748b", textAlign: "center" },
+  bankLogoText: { fontSize: 9, color: "#64748b", textAlign: "center" },
   bankLogoTextActive: { color: "#0f172a", fontWeight: "700" },
-  bankMoreItem:       { width: 24, alignItems: "center", justifyContent: "center", paddingTop: 6 },
-  bankMoreText:       { fontSize: 22, color: "#94a3b8", fontWeight: "700" },
+  bankMoreItem: { width: 24, alignItems: "center", justifyContent: "center", paddingTop: 6 },
+  bankMoreText: { fontSize: 22, color: "#94a3b8", fontWeight: "700" },
 
   methodCard: {
     backgroundColor: "#f8fafc",
@@ -549,11 +562,11 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 14,
   },
-  methodTitle:          { fontSize: 16, fontWeight: "700", color: "#0f172a", marginBottom: 6, lineHeight: 22 },
+  methodTitle: { fontSize: 16, fontWeight: "700", color: "#0f172a", marginBottom: 6, lineHeight: 22 },
   methodTitleHighlight: { color: "#0b72e7", textDecorationLine: "underline" },
-  methodDescription:    { fontSize: 13, color: "#64748b", marginBottom: 12 },
+  methodDescription: { fontSize: 13, color: "#64748b", marginBottom: 12 },
 
-  brandLogo:  { width: 110, height: 44, alignSelf: "center", marginBottom: 10 },
+  brandLogo: { width: 110, height: 44, alignSelf: "center", marginBottom: 10 },
   qrFrame: {
     alignSelf: "center",
     backgroundColor: "#fff",
@@ -567,7 +580,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  qrImage:        { width: 220, height: 220 },
+  qrImage: { width: 220, height: 220 },
   napasInfo: {
     textAlign: "center",
     fontSize: 12,
@@ -586,12 +599,12 @@ const styles = StyleSheet.create({
     borderBottomColor: "#dbe4f0",
     gap: 8,
   },
-  infoRowLast:  { flexDirection: "row", alignItems: "center", paddingTop: 10, gap: 8 },
+  infoRowLast: { flexDirection: "row", alignItems: "center", paddingTop: 10, gap: 8 },
   infoRowLabel: { width: 76, fontSize: 13, color: "#64748b" },
   infoRowValue: { flex: 1, fontSize: 14, color: "#0f172a", fontWeight: "700" },
-  amountText:   { color: "#dc2626", fontSize: 16 },
+  amountText: { color: "#dc2626", fontSize: 16 },
 
-  copyButton:     { backgroundColor: "#e8f1ff", borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 },
+  copyButton: { backgroundColor: "#e8f1ff", borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 },
   copyButtonText: { fontSize: 11, color: "#0b72e7", fontWeight: "700" },
 
   noticeCard: {
@@ -602,7 +615,7 @@ const styles = StyleSheet.create({
     borderColor: "#bfdbfe",
   },
   noticeTitle: { fontSize: 14, fontWeight: "700", color: "#1d4ed8", marginBottom: 4 },
-  noticeText:  { fontSize: 13, lineHeight: 19, color: "#1e3a8a" },
+  noticeText: { fontSize: 13, lineHeight: 19, color: "#1e3a8a" },
 
   primaryButton: {
     backgroundColor: "#dc2626",
