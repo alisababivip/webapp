@@ -1,4 +1,4 @@
-package com.concavoi.hb88
+package com.win33.hb88
 
 import android.app.Application
 import android.content.res.Configuration

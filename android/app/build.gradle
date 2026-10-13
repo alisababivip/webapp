@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.concavoi.hb88'
+    namespace 'com.win33.hb88'
     defaultConfig {
-        applicationId 'com.concavoi.hb88'
+        applicationId 'com.win33.hb88'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

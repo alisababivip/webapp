@@ -19,7 +19,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.concavoi.hb88"
+      "package": "com.win33.hb88"
     },
     "web": {
       "bundler": "metro",
